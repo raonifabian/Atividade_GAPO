@@ -1,0 +1,85 @@
+ CREATE TABLE apostador (
+    id_apo serial,
+    nome_apo character varying(50),
+    logradouro_apo character varying(50),
+    numero_apo integer,
+    bairro_apo character varying(90),
+    cidade_apo character varying(30),
+    estado_apo character varying(2),
+    cep_apo character varying(9),
+    cpf_apo character varying(14),
+    CONSTRAINT apostador_pkey PRIMARY KEY (id_apo),
+    CONSTRAINT apostador_cpf_key UNIQUE (cpf_apo)
+);
+SELECT * FROM apostador
+
+
+CREATE TABLE lutador(
+    id_lut serial,
+    nome_lut character varying(50),
+    nacionalidade_lut character varying(20),
+    apelido_lut character varying(50),
+    tel_lut character varying(20),
+    data_cad_lut date,
+    CONSTRAINT lutador_pkey PRIMARY KEY (id_lut)
+);
+SELECT * FROM lutador
+
+    
+CREATE TABLE luta(
+    id_combate serial,
+    nome_combate character varying(80),
+    cod_combate character varying(20),
+    custo_aposta_combate double precision,
+    id_lutador1 integer,
+    id_lutador2 integer, 
+    CONSTRAINT fk_lutador1 FOREIGN KEY (id_lutador1) REFERENCES lutador (id_lut),
+    CONSTRAINT fk_lutador2 FOREIGN KEY (id_lutador2) REFERENCES lutador (id_lut),
+    CONSTRAINT check_lutadores_diferentes CHECK (id_lutador1 <> id_lutador2),
+    CONSTRAINT luta_pkey PRIMARY KEY (id_combate)
+);
+
+
+CREATE TABLE funcionario
+(
+    id_fun serial,
+    nome_fun character varying(50),
+    cpf_fun character varying(50),
+    login_fun character varying(50),
+    senha_fun character varying(100),
+    tipo_fun character varying(50),
+    CONSTRAINT funcionario_pkey PRIMARY KEY (id_fun),
+    CONSTRAINT funcionario_cpf_key UNIQUE (cpf_fun),
+    CONSTRAINT funcionario_login_key UNIQUE (login_fun)
+);
+
+   
+CREATE TABLE aposta
+(
+    id_aposta serial,
+    dat_aposta date,
+    custo_aposta_combate double precision,
+    id_apo integer,
+    CONSTRAINT aposta_pkey PRIMARY KEY (id_aposta),
+    CONSTRAINT aposta_id_apo_fkey FOREIGN KEY (id_apo) REFERENCES apostador (id_apo)
+);
+
+
+CREATE TABLE luta_aposta
+(
+    id_combate integer,
+    id_aposta integer,
+    custo_aposta_combate double precision,
+    qtd_apostada integer,
+    CONSTRAINT luta_aposta_id_luta_fkey FOREIGN KEY (id_combate) REFERENCES luta (id_combate),
+    CONSTRAINT luta_aposta_id_aposta_fkey FOREIGN KEY (id_aposta) REFERENCES aposta (id_aposta)
+);
+CREATE EXTENSION pgcrypto;
+
+
+
+
+
+Insert into funcionario(nome_fun, cpf_fun, login_fun, senha_fun, tipo_fun) values ( 
+'FUNCIONARIO 1', '111.111.111-11', 'funcionario1', crypt('123456',gen_salt('bf', 8)), 
+'ADMINISTRADOR');
